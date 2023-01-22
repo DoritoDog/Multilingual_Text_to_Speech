@@ -1,6 +1,7 @@
 import sys
 import os
 import numpy as np
+from tqdm import tqdm
 
 sys.path.insert(0, "../")
 
@@ -51,7 +52,7 @@ if __name__ == '__main__':
         print(f'Creating spectrograms for: {fs}')
 
         with open(os.path.join(d, fs), 'w', encoding='utf-8') as f:
-            for i in m:
+            for i in tqdm(m):
                 idx, s, l, a, _, _, raw_text, ph = i
                 spec_name = idx + '.npy'      
                 audio_path = os.path.join(d, a)       
