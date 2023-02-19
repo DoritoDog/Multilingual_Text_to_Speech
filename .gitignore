@@ -2,6 +2,9 @@
 data/ljspeech
 data/my_blizzard
 data/comvoi
+data/vctk
+data/comvoi_vctk
+
 logs/
 checkpoints/
 *.wav
@@ -9,6 +12,7 @@ checkpoints/
 *.tsvm
 *.csv
 *.tar.xz
+*.zip
 *metadata.csv
 .vscode
 
@@ -116,3 +120,5 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+.idea/
