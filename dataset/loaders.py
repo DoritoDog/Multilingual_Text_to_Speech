@@ -124,9 +124,10 @@ def my_common_voice(root_path, meta_files=None):
         language_dir = os.path.dirname(meta_file)
         with open(meta_file, 'r', encoding='utf-8') as ttf:
             language = os.path.basename(language_dir)  
-            for line in ttf:       
+            for line in ttf:
                 cols = line.rstrip().split('|')
-                speaker_name = cols[0]  
+                # The speaker must start with their language.
+                speaker_name = (language + '-' + cols[0]) if not cols[0].startswith(language) else cols[0]
                 audio = os.path.join(language, "wavs", cols[0], cols[1])
                 full_audio = os.path.join(root_path, audio)
                 assert os.path.isfile(full_audio), (
