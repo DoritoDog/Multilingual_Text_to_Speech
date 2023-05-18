@@ -3,12 +3,17 @@ import numpy as np
 import collections
 import torch
 import random
+import librosa
+import json
 
 from dataset import loaders
 from utils import audio
 from utils import text
 from utils.logging import Logger
 from params.params import Params as hp
+
+from waveglow.mel2samp import create_mel
+from waveglow.mel2samp import Mel2Samp
 
 
 class TextToSpeechDatasetCollection():
@@ -213,6 +218,11 @@ class TextToSpeechDataset(torch.utils.data.Dataset):
             phonemes (boolean, default True): If true, phonemized variants of utterances are computed and saved.
         """
 
+        with open('waveglow/config.json') as f:
+            data = f.read()
+        data_config = json.loads(data)["data_config"]
+        mel2samp = Mel2Samp(**data_config)
+        
         # save current sample rate and fft freqs hyperparameters, as we may process dataset with different sample rate
         if spectrograms:
             old_sample_rate = hp.sample_rate
@@ -240,14 +250,23 @@ class TextToSpeechDataset(torch.utils.data.Dataset):
         with open(metafile_path, 'w', encoding='utf-8') as f:
             Logger.progress(0, prefix='Building metafile:')
             for i in range(len(items)):
-                raw_text, audio_path, speaker, language = items[i]   
+                raw_text, audio_path, speaker, language = items[i]
+
+                # Filter out short and long clips.
+                wav, sr = librosa.load(os.path.join(dataset_root_dir, audio_path))
+                duration = librosa.get_duration(y=wav)
+                if duration < hp.min_duration or duration > hp.max_duration:
+                    continue
+
                 if language == "": language = hp.languages[0]
                 phonemized_text = text.to_phoneme(raw_text, False, language, phoneme_dicts[language]) if phonemes else ""     
                 spectrogram_paths = "|"
                 if spectrograms:
-                    spec_name = f'{str(i).zfill(6)}.npy'                 
-                    audio_data = audio.load(os.path.join(dataset_root_dir, audio_path))
-                    np.save(os.path.join(spectrogram_dirs[0], spec_name), audio.spectrogram(audio_data, True))
+                    spec_name = f'{str(i).zfill(6)}.npy'
+                    audio_data_path = os.path.join(dataset_root_dir, audio_path)
+                    audio_data = audio.load(audio_data_path)
+                    mel = create_mel(audio_data_path, mel2samp)
+                    np.save(os.path.join(spectrogram_dirs[0], spec_name), mel)
                     np.save(os.path.join(spectrogram_dirs[1], spec_name), audio.spectrogram(audio_data, False))
                     spectrogram_paths = os.path.join('spectrograms', spec_name) + '|' + os.path.join('linear_spectrograms', spec_name)
                 print(f'{str(i).zfill(6)}|{speaker}|{language}|{audio_path}|{spectrogram_paths}|{raw_text}|{phonemized_text}', file=f)

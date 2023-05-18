@@ -134,6 +134,8 @@ class Params:
                                          # statistics (mean and variance) are computed from dataset at the start of training  
     use_preemphasis = True               # if True, a preemphasis is applied to raw waveform before using them (spectrogram computation)
     preemphasis = 0.97                   # amount of preemphasis, used if use_preemphasis is True
+    min_duration = 2
+    max_duration = 8
 
 
     @staticmethod

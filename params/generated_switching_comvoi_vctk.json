@@ -3,7 +3,7 @@
 	"batch_size": 50,
 	"case_sensitive": false,
 	"characters": " abcdefghijklmnopqrstuvwxyzçèéßäöōǎǐíǒàáǔüèéìūòóùúāēěīâêôûñőűабвгдежзийклмнопрстуфхцчшщъыьэюяё",	
-	"checkpoint_each_epochs": 1,
+	"checkpoint_each_epochs": 2,
 	"dataset": "comvoi_vctk",
 	"encoder_dimension": 256,
 	"encoder_type": "generated",

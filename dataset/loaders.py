@@ -20,11 +20,11 @@ def vctk(root_path, meta_files=None):
         speaker_name = file_name.split('_')[0]
         utterance_id = file_name.split('_')[1]
         with open(meta_file, 'r', encoding='utf-8') as ttf:
-            text = ttf.read()        
-            audio = os.path.join("wav48", speaker_name, file_name + ".wav")
+            text = ttf.read()
+            audio = os.path.join("wav22", speaker_name, file_name + ".wav")
             full_audio = os.path.join(root_path, audio)
             assert os.path.isfile(full_audio), (
-                f'Referenced audio file {full_audio} does not exist!')  
+                f'Referenced audio file {full_audio} does not exist!')
             items.append([text[:-1], audio, speaker_name, language])
     return items
 
